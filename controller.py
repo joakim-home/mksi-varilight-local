@@ -529,6 +529,7 @@ class MqttBridge:
             "brightness_state_topic": f"{base}/state/brightness",
             "brightness_command_topic": f"{base}/command/brightness",
             "brightness_scale": 100,
+            "on_command_type": "brightness",
             "availability": availability,
             "availability_mode": "all",
             "device": device,

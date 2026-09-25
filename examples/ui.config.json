@@ -1,0 +1,10 @@
+{
+  "controller_management_url": "http://127.0.0.1:2017",
+  "mqtt": {
+    "host": "10.0.0.10",
+    "port": 1883,
+    "username": "mksi-varilight-ui",
+    "password_file": "/etc/mksi-varilight-ui/mqtt.password"
+  },
+  "devices": []
+}

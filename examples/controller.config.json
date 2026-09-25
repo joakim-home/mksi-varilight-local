@@ -1,0 +1,18 @@
+{
+  "bind": "10.0.0.50",
+  "port": 2016,
+  "cert": "/etc/mksi-varilightd/server.crt",
+  "key": "/etc/mksi-varilightd/server.key",
+  "session_poll_seconds": 0.5,
+  "tls_handshake_timeout": 10,
+  "inventory_file": "/var/lib/mksi-varilightd/devices.json",
+  "management_bind": "127.0.0.1",
+  "management_port": 2017,
+  "mqtt": {
+    "host": "10.0.0.10",
+    "port": 1883,
+    "username": "mksi-varilightd",
+    "password_file": "/etc/mksi-varilightd/mqtt.password"
+  },
+  "devices": []
+}

@@ -1,0 +1,32 @@
+[Unit]
+Description=MKSI Varilight local controller
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=mksi-varilightd
+Group=mksi-varilightd
+WorkingDirectory=/opt/mksi-varilightd
+StateDirectory=mksi-varilightd
+StateDirectoryMode=0750
+ExecStartPre=/usr/bin/python3 /opt/mksi-varilightd/wait-for-bind.py /etc/mksi-varilightd/config.json
+ExecStart=/usr/bin/python3 /opt/mksi-varilightd/controller.py --config /etc/mksi-varilightd/config.json
+Restart=always
+RestartSec=2
+TimeoutStartSec=30
+TimeoutStopSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+ProtectClock=true
+RestrictSUIDSGID=true
+LockPersonality=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+
+[Install]
+WantedBy=multi-user.target

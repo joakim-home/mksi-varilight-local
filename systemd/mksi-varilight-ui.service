@@ -1,0 +1,27 @@
+[Unit]
+Description=MKSI Varilight local UI
+After=network-online.target mksi-varilightd.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=mksi-varilight-ui
+Group=mksi-varilight-ui
+WorkingDirectory=/opt/mksi-varilight-ui
+ExecStart=/usr/bin/python3 /opt/mksi-varilight-ui/ui.py --config /etc/mksi-varilight-ui/config.json --port 8088
+Restart=always
+RestartSec=2
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+ProtectClock=true
+RestrictSUIDSGID=true
+LockPersonality=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,29 @@
+name: tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Python tests
+        run: python -m unittest -v test_protocol.py test_controller.py
+      - name: Python compile check
+        run: python -m py_compile controller.py protocol.py ui.py wait-for-bind.py
+      - name: JavaScript syntax check
+        run: node --check www/app.js
+      - name: Example JSON validation
+        run: python -m json.tool examples/controller.config.json >/dev/null && python -m json.tool examples/ui.config.json >/dev/null
+      - name: Shell syntax check
+        run: bash -n scripts/install-controller.sh scripts/install-ui.sh scripts/healthcheck.sh

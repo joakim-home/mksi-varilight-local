@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>MKSI Varilight</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <div class="eyebrow">LAN OF THINGS</div>
+      <h1>MKSI Varilight</h1>
+      <p>Local dimmers. Local controller. No SUPLA cloud.</p>
+    </div>
+    <div class="status-pill" id="backend-health">Controller checking…</div>
+  </header>
+
+  <main>
+    <section class="hero-card">
+      <div>
+        <div class="eyebrow">CONTROL PATH</div>
+        <strong>Varilight → mksi-varilightd → MQTT → Home Assistant / MKSI</strong>
+      </div>
+      <div class="hero-note" id="daemon-state">Daemon unknown</div>
+    </section>
+
+    <nav class="tabs" aria-label="Varilight views">
+      <button class="tab-button active" data-tab="controls" type="button">Controls</button>
+      <button class="tab-button" data-tab="logs" type="button">Logs</button>
+    </nav>
+    <section class="tab-panel active" id="tab-controls">
+      <div class="controls-toolbar">
+        <button id="add-light" type="button">+ Add Light</button>
+        <span id="enrollment-summary" class="enrollment-summary"></span>
+      </div>
+      <section id="enrollment-panel" class="enrollment-card hidden">
+        <div class="enrollment-head">
+          <div>
+            <div class="eyebrow">ENROLLMENT</div>
+            <strong>Waiting for a compatible Varilight dimmer</strong>
+            <div class="enrollment-note">Put the dimmer in setup mode and point it at this controller. Unknown devices will appear below.</div>
+          </div>
+          <button id="cancel-enrollment" class="secondary" type="button">Cancel</button>
+        </div>
+        <div id="enrollment-candidates" class="enrollment-candidates"></div>
+      </section>
+      <section class="lights" id="lights"></section>
+      <section class="inventory-card"><div class="eyebrow">CONTROLLER STATUS</div>
+        <table><thead><tr><th>Light</th><th>GUID</th><th>Availability</th><th>Origin</th><th>Last change</th></tr></thead><tbody id="inventory"></tbody></table>
+      </section>
+    </section>
+    <section class="tab-panel" id="tab-logs">
+      <section class="logs-card">
+      <div class="logs-head">
+        <div><div class="eyebrow">LIVE LOGS</div><div class="logs-note">Read-only systemd journal</div></div>
+        <div class="logs-controls">
+          <select id="log-source"><option value="controller">Controller</option><option value="ui">UI</option><option value="both">Both</option></select>
+          <select id="log-lines"><option value="50">50 lines</option><option value="100" selected>100 lines</option><option value="250">250 lines</option></select>
+          <label class="auto-label"><input type="checkbox" id="log-auto" checked> Auto</label>
+          <button id="log-refresh" class="secondary">Refresh</button>
+        </div>
+      </div>
+      <pre id="log-output">Loading logs…</pre>
+      </section>
+    </section>
+  </main>
+
+  <script src="/app.js"></script>
+</body>
+</html>

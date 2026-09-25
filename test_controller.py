@@ -359,6 +359,7 @@ class MqttTests(unittest.TestCase):
         topic, payload = configs[0]
         self.assertIn(LIVING.replace("-", "").lower(), topic)
         self.assertEqual(payload["availability_mode"], "all")
+        self.assertEqual(payload["on_command_type"], "brightness")
         self.assertEqual({x["topic"] for x in payload["availability"]}, {
             controller.DAEMON_AVAILABILITY,
             "mksi/lights/livingroom/availability",

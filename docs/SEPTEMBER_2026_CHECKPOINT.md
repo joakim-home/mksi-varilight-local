@@ -1,5 +1,11 @@
 # September 2026 compatibility work and manufacturer review
-Updated: 1 October 2026. Documentation checkpoint; not a release or security certification.
+Updated: 1 October 2026. Historical checkpoint with source-sync addendum; not a security certification.
+
+## Source sync completed — 1 October
+
+After the documentation-only checkpoint below, actual production controller.py and protocol.py were retrieved through the restricted PVE account. The TLS/G patch was ported exactly, preserving the repository generic bind default rather than copying the production LAN address. All 64 tests pass: the existing 55 plus nine compatibility regressions, including real TLS 1.1/AES128-SHA and TLS 1.2/ECDHE handshakes. CI now uses unittest discovery.
+
+The earlier statements below that the patch was live-only describe the pre-sync checkpoint and are superseded by this addendum. Steps 1–2 in its next-steps list are complete for source retrieval, comparison and regression coverage; exact historical backup names remain uncollected. This source sync makes no new physical or Alexa acceptance claim and changes no live service. Peasant supplied a bounded test checklist via MKSI Agent; the implementation and test outcomes were checked independently.
 
 ## Scope and evidence
 This record consolidates the 30 September replacement-dimmer investigation, the existing Alexa installation, the repository ZIP review and the manufacturer-review request. Live controller changes were run by the owner and assessed through logs and screenshots. The actual patched production sources have not yet been retrieved and compared with GitHub.

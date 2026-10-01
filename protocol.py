@@ -192,3 +192,54 @@ def brightness_from_value(value: bytes) -> int:
 
 
 # Firmware 2.8.55 uses a 16-byte little-endian timeval (<qq) for ping replies.
+
+
+CALL_REGISTER_G = 76
+CALL_REGISTER_RESULT_B = 71
+REG_CHANNEL_E = struct.Struct("<BiiiqBI8sBB")
+REGISTER_RESULT_B = struct.Struct("<iBBBH")
+
+assert REG_CHANNEL_E.size == 36
+assert REGISTER_RESULT_B.size == 9
+
+def decode_registration_g(payload: bytes) -> dict:
+    if len(payload) < REG_E_FIXED.size:
+        raise ProtocolError("registration-G payload too short")
+    fixed = REG_E_FIXED.unpack_from(payload)
+    count = fixed[-1]
+    if count > CHANNEL_MAX_COUNT:
+        raise ProtocolError("registration-G channel count exceeds limit")
+    expected = REG_E_FIXED.size + count * REG_CHANNEL_E.size
+    if len(payload) != expected:
+        raise ProtocolError(f"registration-G size {len(payload)} != {expected}")
+    channels = []
+    for index in range(count):
+        offset = REG_E_FIXED.size + index * REG_CHANNEL_E.size
+        number, kind, funcs, default, flags, offline, validity, value, icon, subdevice = (
+            REG_CHANNEL_E.unpack_from(payload, offset))
+        channels.append({
+            "number": number, "type": kind, "func_list": funcs,
+            "default": default, "flags": flags, "offline": offline,
+            "validity": validity, "value": value,
+            "default_icon": icon, "subdevice_id": subdevice,
+        })
+    return {
+        "email": _cstring(fixed[0]), "auth_key": fixed[1], "guid": fixed[2],
+        "name": _cstring(fixed[3]), "soft_ver": _cstring(fixed[4]),
+        "server_name": _cstring(fixed[5]), "flags": fixed[6],
+        "manufacturer_id": fixed[7], "product_id": fixed[8],
+        "channels": channels,
+    }
+
+def build_register_result_b(packet_version: int, rr_id: int, result_code: int,
+                            activity_timeout: int,
+                            version_min: int = SUPLA_PROTO_VERSION_MIN,
+                            server_version: int | None = None) -> bytes:
+    if server_version is None:
+        server_version = packet_version
+    # Controller accepts exactly one dimmer channel, numbered zero.
+    report = bytes([1])  # CHANNEL_REPORT_CHANNEL_REGISTERED
+    payload = REGISTER_RESULT_B.pack(
+        result_code, activity_timeout, server_version, version_min, len(report)
+    ) + report
+    return Packet(packet_version, rr_id, CALL_REGISTER_RESULT_B, payload).encode()

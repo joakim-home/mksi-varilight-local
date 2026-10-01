@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased - 2026-10-01
+
+- Synced deployed TLS 1.2/ECDHE and registration-G/protocol-25 support for firmware 26.08.
+- Retained TLS 1.1, E/version-12 registration and enrollment/layout checks.
+- Added nine regression tests: total 64, including actual old/new TLS handshakes.
+- Preserved generic repository bind default instead of copying the deployment address.
+- Updated compatibility/security documentation. Publication remains on hold for manufacturer review.
+- No claim that spontaneous-off behaviour or LivingRoom Alexa acceptance is resolved.
+
 ## 0.2.0 - 2026-09-25
 
 Device-management and Home Assistant hardening release.

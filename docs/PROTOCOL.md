@@ -2,6 +2,8 @@
 
 This document describes the wire behavior implemented by `protocol.py` and confirmed against a VARILIGHT V-Pro Smart dimmer reporting firmware **2.8.55** on 23 September 2026.
 
+The 1 October source sync adds the replacement firmware 26.08 profile observed on 30 September: TLS 1.2, registration G, envelope version 25. Full physical stability is not established by registration.
+
 It is intentionally a compatibility map, not a general SUPLA protocol implementation.
 
 ## Transport
@@ -12,7 +14,7 @@ The tested dimmer connects to TCP port **2016** using:
 - cipher `AES128-SHA`;
 - SUPLA protocol envelope version 12.
 
-`controller.py` therefore creates a server TLS context constrained to TLS 1.1 and `AES128-SHA:@SECLEVEL=0`. This is legacy cryptography required for device compatibility; keep the service on a trusted LAN.
+The server now permits TLS 1.1 through TLS 1.2 with `ECDHE-RSA-AES128-GCM-SHA256:AES128-SHA:@SECLEVEL=0`. The replacement negotiated TLS 1.2 with the ECDHE cipher. This is legacy cryptography required for device compatibility; keep the service on a trusted LAN.
 
 ## Frame envelope
 
@@ -38,6 +40,8 @@ The fixed header is 18 bytes; total framing overhead is 23 bytes. The Python hea
 | server -> device | `PING_SERVER_RESULT` | 50 |
 | device -> server | `REGISTER_DEVICE_E` | 69 |
 | server -> device | `REGISTER_DEVICE_RESULT` | 70 |
+| device -> server | `REGISTER_DEVICE_G` | 76 |
+| server -> device | `REGISTER_DEVICE_RESULT_B` | 71 |
 | device -> server | channel value changed | 100 / 102 / 103 |
 | server -> device | `CHANNEL_SET_VALUE` | 110 |
 | device -> server | `CHANNEL_SET_VALUE_RESULT` | 120 |
@@ -51,6 +55,12 @@ Unknown calls are logged rather than guessed. Malformed known calls are containe
 Firmware 2.8.55 registered with call 69, a **609-byte payload** representing the fixed registration data plus one channel.
 
 A successful stock-compatible registration result uses result code **3** (`SUPLA_RESULTCODE_TRUE`). The response frame envelope remains protocol version 12 for this device, while the registration-result payload advertises server version 28/minimum 1.
+
+### Replacement registration G
+
+Only (registration E, version 12) and (registration G, version 25) pairs are accepted. G uses the shared 584-byte fixed header and channel-E format `<BiiiqBI8sBB` (36 bytes), giving 620 bytes for one channel. Flags are 64-bit; offline, validity, default icon and subdevice ID are preserved by decoding. Exact length and channel-count checks apply.
+
+The controller still requires one channel, number 0, type 4000, brightness 0..100. G receives reply call 71: `<iBBBH` header (result, timeout, server version, minimum version, report length), followed by `01` for registered channel zero. The payload is ten bytes. E retains call 70 and its seven-byte payload. Unknown GUIDs retain the enrollment path. AuthKey is not validated; see SECURITY.md.
 
 ## Activity timeout and ping
 

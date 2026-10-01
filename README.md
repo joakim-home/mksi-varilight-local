@@ -8,7 +8,7 @@ The goal is deliberately simple: **keep the Varilight hardware and firmware, kee
 
 > **Status:** working beta. Tested with **3 × VARILIGHT V-Pro Smart** dimmers running firmware **2.8.55** / SUPLA protocol **v12**.
 
-> **1 October checkpoint:** Publication is on hold for manufacturer review. The replacement firmware 26.08 required live TLS 1.2 and registration-G/protocol-25 patches that are **not yet incorporated in this repository**. See the [September work record](docs/SEPTEMBER_2026_CHECKPOINT.md) for the changes, Alexa status, security findings and remaining validation.
+> **1 October update:** The deployed firmware-26.08 TLS 1.2 and registration-G/protocol-25 compatibility patches are now incorporated, with 64 passing offline tests including both TLS handshakes. Physical stability and LivingRoom Alexa acceptance remain separate outstanding checks. Publication remains on hold for manufacturer review. See the [work record](docs/SEPTEMBER_2026_CHECKPOINT.md).
 
 ## Why this exists
 
@@ -36,8 +36,8 @@ No dimmer firmware modification is required.
 ```text
 VARILIGHT V-Pro Smart (stock firmware)
         |
-        | TLS 1.1 / AES128-SHA, TCP 2016
-        | observed SUPLA protocol-v12 subset
+        | TLS 1.1 or 1.2, TCP 2016
+        | observed SUPLA protocol-v12/v25 subset
         v
   mksi-varilightd
         |
@@ -82,13 +82,15 @@ Confirmed on the reference hardware:
 - TLS 1.1 with `AES128-SHA`
 - literal brightness values `0..100`
 
+Replacement firmware `26.08` is additionally supported for observed TLS 1.2 / `ECDHE-RSA-AES128-GCM-SHA256`, registration G / protocol 25, with the same single-channel layout. Registration and HA reported state were observed; sustained physical acceptance is still pending.
+
 The architecture is not limited to three devices, but **compatibility beyond the tested hardware/firmware is not yet claimed**. Other revisions may behave differently.
 
 See [Protocol notes](docs/PROTOCOL.md) for the confirmed wire behaviour.
 
 ## Security
 
-The stock dimmer requires legacy TLS 1.1 and a legacy cipher suite. The bundled web UI is intentionally small and LAN-focused: it serves HTTP and does not provide its own authentication layer.
+Earlier tested firmware uses legacy TLS 1.1; the replacement uses TLS 1.2. Legacy support and the lowered security level remain enabled. The bundled web UI is intentionally small and LAN-focused: it serves HTTP and does not provide its own authentication layer.
 
 The UI can control lights and manage the device inventory, so deploy it only on a trusted LAN/VLAN or place authenticated access in front of it. The controller management endpoint binds to loopback and should remain private.
 
@@ -97,12 +99,12 @@ See [SECURITY.md](SECURITY.md) before exposing any part of the system beyond a t
 ## Tests
 
 ```bash
-python3 -m unittest -v test_protocol.py test_controller.py
+python3 -m unittest discover -v
 python3 -m py_compile controller.py protocol.py ui.py wait-for-bind.py
 node --check www/app.js
 ```
 
-Current baseline: **55 tests** — 36 controller/lifecycle/MQTT/device-management tests and 19 protocol tests.
+Current baseline: **64 tests** — the existing 55 plus nine compatibility tests, including real TLS 1.1 and TLS 1.2 handshakes. Tests require the OpenSSL CLI.
 ## Documentation
 
 - [Installation](docs/INSTALLATION.md) — host, TLS, MQTT, systemd and first start.

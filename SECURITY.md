@@ -6,7 +6,7 @@ MKSI Varilight Local is designed for a trusted home/lab LAN or isolated IoT VLAN
 
 ## Legacy TLS is intentional
 
-The tested stock dimmer firmware requires TLS 1.1 and `AES128-SHA`. `controller.py` deliberately lowers the OpenSSL security level for that listener for compatibility.
+Earlier tested firmware uses TLS 1.1 and `AES128-SHA`; replacement firmware 26.08 uses TLS 1.2 and `ECDHE-RSA-AES128-GCM-SHA256`. Both profiles remain enabled. `controller.py` deliberately lowers the OpenSSL security level for that listener for compatibility.
 
 This is not modern transport security. Network segmentation and access control are the primary security boundary.
 
@@ -39,7 +39,7 @@ This protects against accidental enrollment; it is not a substitute for network 
 
 The registration decoder reads AuthKey, but the controller does not validate it. An enrolled GUID is an identifier, not a secret or proof of device identity. A client able to reach the TLS listener and send a compatible registration using that GUID can replace the existing device session, report false state or receive commands.
 
-Enrollment does not prevent impersonation of an already enrolled device. Restrict access to the listener; cryptographic device authentication remains unimplemented. See the [September checkpoint](docs/SEPTEMBER_2026_CHECKPOINT.md) for the review scope and live-only compatibility changes.
+Enrollment does not prevent impersonation of an already enrolled device. Restrict access to the listener; cryptographic device authentication remains unimplemented. See the [September checkpoint](docs/SEPTEMBER_2026_CHECKPOINT.md) for the review scope and compatibility changes.
 
 ## MQTT
 

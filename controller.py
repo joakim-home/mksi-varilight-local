@@ -150,8 +150,8 @@ class FrameSplitter:
 def build_tls_context(cert: Path, key: Path) -> ssl.SSLContext:
     ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
     ctx.minimum_version = ssl.TLSVersion.TLSv1_1
-    ctx.maximum_version = ssl.TLSVersion.TLSv1_1
-    ctx.set_ciphers("AES128-SHA:@SECLEVEL=0")
+    ctx.maximum_version = ssl.TLSVersion.TLSv1_2
+    ctx.set_ciphers("ECDHE-RSA-AES128-GCM-SHA256:AES128-SHA:@SECLEVEL=0")
     ctx.load_cert_chain(certfile=str(cert), keyfile=str(key))
     return ctx
 
@@ -730,12 +730,13 @@ class DeviceSession:
             log_event("stale_command_send", peer=self.peer_text, guid=self.guid, brightness=target)
 
     def _handle_registration(self, packet: p.Packet) -> bool:
-        if packet.version != 12:
+        if (packet.call_id, packet.version) not in {(p.CALL_REGISTER_E, 12), (p.CALL_REGISTER_G, 25)}:
             log_event("registration_rejected", peer=self.peer_text, reason="unsupported_protocol_version",
                       version=packet.version)
             return False
         try:
-            reg = p.decode_registration_e(packet.payload)
+            decoder = (p.decode_registration_g if packet.call_id == p.CALL_REGISTER_G else p.decode_registration_e)
+            reg = decoder(packet.payload)
             guid = normalise_guid(reg["guid"])
         except (p.ProtocolError, ValueError) as exc:
             log_event("registration_rejected", peer=self.peer_text, reason="decode_error", error=str(exc))
@@ -765,7 +766,8 @@ class DeviceSession:
         if old is not None and old is not self:
             old.close("replaced_by_reconnect")
         self.registered = True
-        raw = p.build_register_result(packet.version, self.allocate_rr_id(), p.SUPLA_RESULTCODE_TRUE,
+        builder = (p.build_register_result_b if packet.call_id == p.CALL_REGISTER_G else p.build_register_result)
+        raw = builder(packet.version, self.allocate_rr_id(), p.SUPLA_RESULTCODE_TRUE,
                                       p.DEFAULT_ACTIVITY_TIMEOUT, p.SUPLA_PROTO_VERSION_MIN,
                                       p.SUPLA_PROTO_VERSION)
         self._send(raw, "register_result", result_code=p.SUPLA_RESULTCODE_TRUE)
@@ -777,7 +779,7 @@ class DeviceSession:
 
     def _handle_packet(self, packet: p.Packet) -> bool:
         if not self.registered:
-            if packet.call_id != p.CALL_REGISTER_E:
+            if packet.call_id not in (p.CALL_REGISTER_E, p.CALL_REGISTER_G):
                 log_event("pre_registration_call_ignored", peer=self.peer_text, call_id=packet.call_id,
                           data_size=len(packet.payload))
                 return True

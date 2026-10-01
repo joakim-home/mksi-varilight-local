@@ -8,6 +8,8 @@ The goal is deliberately simple: **keep the Varilight hardware and firmware, kee
 
 > **Status:** working beta. Tested with **3 × VARILIGHT V-Pro Smart** dimmers running firmware **2.8.55** / SUPLA protocol **v12**.
 
+> **1 October checkpoint:** Publication is on hold for manufacturer review. The replacement firmware 26.08 required live TLS 1.2 and registration-G/protocol-25 patches that are **not yet incorporated in this repository**. See the [September work record](docs/SEPTEMBER_2026_CHECKPOINT.md) for the changes, Alexa status, security findings and remaining validation.
+
 ## Why this exists
 
 This started as troubleshooting a local-control problem and turned into an interoperability project.

@@ -35,6 +35,12 @@ Unknown GUIDs remain rejected unless a user explicitly opens a time-limited enro
 
 This protects against accidental enrollment; it is not a substitute for network access control or UI authentication.
 
+## Device authentication limitation
+
+The registration decoder reads AuthKey, but the controller does not validate it. An enrolled GUID is an identifier, not a secret or proof of device identity. A client able to reach the TLS listener and send a compatible registration using that GUID can replace the existing device session, report false state or receive commands.
+
+Enrollment does not prevent impersonation of an already enrolled device. Restrict access to the listener; cryptographic device authentication remains unimplemented. See the [September checkpoint](docs/SEPTEMBER_2026_CHECKPOINT.md) for the review scope and live-only compatibility changes.
+
 ## MQTT
 
 Use separate credentials for controller, UI and Home Assistant. Apply least-privilege ACLs from `docs/MQTT.md`. Avoid broad `#` permissions and anonymous Internet-reachable MQTT.

@@ -116,6 +116,8 @@ Prepare any manufacturer ZIP from an identified private commit, excluding creden
 ## Workflow and next steps
 The owner requested the existing ChatGPT -> MKSI Agent -> Peasant workflow. MKSI_AGENT.md was read first. Agent health confirmed gateway, worker and Peasant healthy on 1 October. Deterministic Agent list/read/git actions retrieved current operator records. Peasant is used only for bounded read-only documentation review; its output is independently checked. Agent has no write/commit/push endpoint, so reviewed edits and GitHub writes use existing deterministic tools.
 
+Peasant review completed using qwen3:4b-instruct with the Alexa installation record as its explicit source. Its response was truncated at the output bound. Independent review rejected suggestions to remove the Alexa acceptance/date: the source explicitly records both. Its useful distinction between advertised LevelControl and physically tested dimming is preserved above. No model confidence label was treated as evidence.
+
 1. Retrieve actual production controller.py/protocol.py and identify backups without exposing private config.
 2. Compare with the private repository; port reviewed TLS/G changes and add persistent old/new regression tests.
 3. Confirm LivingRoom Alexa voice control and physical/state feedback; retain the accepted Cooking/Dining baseline.

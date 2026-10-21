@@ -8,7 +8,9 @@ The goal is deliberately simple: **keep the Varilight hardware and firmware, kee
 
 > **Status:** working beta. Tested with **3 × VARILIGHT V-Pro Smart** dimmers running firmware **2.8.55** / SUPLA protocol **v12**.
 
-> **1 October update:** The deployed firmware-26.08 TLS 1.2 and registration-G/protocol-25 compatibility patches are now incorporated, with 64 passing offline tests including both TLS handshakes. Physical stability and LivingRoom Alexa acceptance remain separate outstanding checks. Publication remains on hold for manufacturer review. See the [work record](docs/SEPTEMBER_2026_CHECKPOINT.md).
+> **Household deployment acceptance (October 2026):** Alexa ↔ Varilight and the Living Room dimmer end-to-end path are complete and accepted by the system owner. This does **not** certify every firmware variant or authorize publication; manufacturer review/compatibility is a separate track.
+
+> **1 October update (historical compatibility baseline):** The deployed firmware-26.08 TLS 1.2 and registration-G/protocol-25 compatibility patches are now incorporated, with 64 passing offline tests including both TLS handshakes. At that time physical stability and LivingRoom Alexa acceptance were separate outstanding checks; the **household Alexa/Living Room acceptance has since been confirmed completed**. Firmware compatibility test coverage and manufacturer review remain separate. Publication remains on hold for manufacturer review. See the [work record](docs/SEPTEMBER_2026_CHECKPOINT.md).
 
 ## Why this exists
 
